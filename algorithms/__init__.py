@@ -1,0 +1,1 @@
+from cwe import cwe
