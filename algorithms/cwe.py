@@ -4,12 +4,12 @@
 # encoding=utf8
 
 
+import sqlite3
+import re
+import string
+import math
+
 class cwe:
-
-    import sqlite3
-    import re
-    import string
-
     conn = sqlite3.connect('cats.db')
     cursor = conn.cursor()
     whitelist = string.letters + "ךםןףץאבגדהוזחטיכלמנסעפצקרשת" + ' '
@@ -69,31 +69,36 @@ class cwe:
             tmp[row[0]] = row[1]
         return tmp
 
-    def findNegativeSimilarities(self):
-        self.cursor.execute('SELECT Word FROM Words')
-        words = {}
-        for word in self.cursor:
-            if not word in words:
-                words[word] = 1
+    def fixValues(self):
+	    self.cursor.execute('SELECT Word FROM Words')
+	    words = {}
+	    for word in self.cursor:
+		    if not word in words:
+		    	words[word] = 1
             else:
-                words[word] = words[word] + 1
-        for word in words:
-            self.cursor.execute("SELECT ID, Value FROM Words WHERE Word='"
-                                 + word[0] + "'")
-            rows = self.cursor.fetchall()
-            for row in rows:
-                sql = 'UPDATE Words SET Value=' + str(row[1]
-                        / words[word]) + ' WHERE ID=' + str(row[0])
-                print sql
-                self.cursor.execute(sql)
+	    		words[word] = words[word] + 1
+	    for word in words:
+	    	self.cursor.execute("SELECT ID, Value FROM Words WHERE Word='"
+	                         + word[0] + "'")
+	    	rows = self.cursor.fetchall()
+	    	for row in rows:
+	    		newVal = row[1] * math.pow(25, 1.5 - words[word])
+	    		if(newVal < 0.2): #שרירותי
+					sql = 'DELETE FROM Words WHERE ID=' + str(row[0])
+	    		else:
+	    			sql = 'UPDATE Words SET Value=' + str(self.translate(newVal, 0, 5, 0, 1)) + ' WHERE ID=' + str(row[0])
+	    		print sql
+	    		self.cursor.execute(sql)
+	    self.conn.commit()
 
-    # Functions from repl.it
     # return value of page in category - evaluate(string,dict)
 
     def evaluate(self, page, cat):
+        page = ''.join(c for c in page if c in self.whitelist)
+        words = page.split()
         value = 0.0
         for word in cat:
-            if word in page:
+            if word in words:
                 value = value + cat[word]
         return value
 
@@ -106,10 +111,21 @@ class cwe:
         print values
         return max(values, key=values.get)
 
-    # end Functions from repl.it
+
 
     def resetTable(self):
         sql = "DROP TABLE IF EXISTS Words"
         self.conn.execute(sql)
         self.conn.commit()
         self.checkDB()
+
+    def translate(self, value, leftMin, leftMax, rightMin, rightMax):
+        # Figure out how 'wide' each range is
+        leftSpan = leftMax - leftMin
+        rightSpan = rightMax - rightMin
+
+        # Convert the left range into a 0-1 range (float)
+        valueScaled = float(value - leftMin) / float(leftSpan)
+
+        # Convert the 0-1 range into a value in the right range.
+        return rightMin + (valueScaled * rightSpan)
