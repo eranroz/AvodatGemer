@@ -17,14 +17,14 @@ class cwe:
     # Create Words table
 
     def checkDB(self):
-        self.conn.execute('''CREATE TABLE IF NOT EXISTS Words
+        self.conn.execute("""CREATE TABLE IF NOT EXISTS Words
 						(
 						ID Integer PRIMARY KEY NOT NULL,
 						Category Text NOT NULL,
 						Word Text NOT NULL,
 						Value Real NOT NULL
 						)
-						''')
+						""")
         self.conn.commit()
 
     # Get all the words with percentage of (greater or equal to a*100 %) to be in a text
@@ -59,7 +59,7 @@ class cwe:
                 + ')'
             print 'Executing: ' + sql
             self.cursor.execute(sql)
-            self.conn.commit()
+        self.conn.commit()
 
     def getWords(self, category):
         self.cursor.execute("SELECT Word, Value FROM Words WHERE Category='"
