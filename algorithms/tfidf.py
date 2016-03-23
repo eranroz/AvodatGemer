@@ -5,57 +5,66 @@ import sqlite3
 import re
 import string
 import math
+import time
 
 conn = sqlite3.connect('cats.db')
 cursor = conn.cursor()
 
-def filter(document):
+def filterString(document):
     whitelist = 'אבגדהוזחטיכלמנסעפצקרשת' + ' ' + 'ךםןףץ'
     document = ''.join(c for c in document if c in whitelist)
     return document
 
-def tf(term, document):
-    count = 0
-    document = filter(document)
-    for word in document.split():
-        if(word==term):
-            count += 1
-    return count
+def tf(term, documents):
+    if(len(documents) == 0):
+        return 0
+    freqSum = 0.0
+    for document in documents:
+        #document = filterString(document)
+        appearances = 0.0
+        for word in document.split():
+            if(word == term):
+                appearances += 1.0
+        freqSum += appearances/len(document)
+    return freqSum/len(documents)
 
 def idf(term, documents):
     count = 0.0
     if len(documents) == 0:
         return 0
     for document in documents:
-        document = filter(document)
-        print document
+        #document = filterString(document)
         if term in document.split():
             count += 1.0
     if count == 0:
         return 0
     return math.log10(len(documents)/count)
 
-def tfidf(term, document, documents):
-    return tf(term, document) * (idf(term, documents) + 1)
+def tfidf(term, documents):
+    return tf(term, documents) * (idf(term, documents) + 1)
 
 def getValues(category, documents):
     values = {}
-    occurances = {}
+    maximum = -2147483648
+    minimum = 2147438647
     for document in documents:
+        document = filterString(document)
         words = []
-        for word in filter(document):
+        for word in document.split():
             if not word in words:
-                if not word in values:
-                    values[word] = tfidf(word, document, documents)
-                    occurances[word] = 1
-                else:
-                    values[word] += tfidf(word, documents, documents)
-                    occurances[word] += 1
+                values[word] = tfidf(word, documents)
+                if(values[word] > maximum):
+                    maximum = values[word]
+                if(values[word] < minimum):
+                    minimum = values[word]
                 words.append(word)
+    print "maximum: " + str(maximum) + ", minimum: " + str(minimum)
     for value in values:
-        sql="INSERT INTO tfidfWords (Category, Word, Value) VALUES ('" + category + "','" + value + "'," + str(values[value]/occurances[value]) + ")"
-        print "Executing: " + sql
-        cursor.execute(sql)
+        values[value] = (values[value]-minimum)/(maximum-minimum)
+        if(values[value]>=0.25):
+            sql="INSERT INTO tfidfWords (Category, Word, Value) VALUES ('" + category + "','" + value + "'," + str(values[value]) + ")"
+            print "Executing: " + sql
+            cursor.execute(sql)
     conn.commit()
 
 def checkDB():
@@ -67,3 +76,19 @@ def checkDB():
     Value Real NOT NULL
     )""")
     conn.commit()
+
+def resetTable():
+    sql = "DROP TABLE IF EXISTS tfidfWords"
+    conn.execute(sql)
+    conn.commit()
+    checkDB()
+def translate(value, leftMin, leftMax, rightMin, rightMax):
+    # Figure out how 'wide' each range is
+    leftSpan = leftMax - leftMin
+    rightSpan = rightMax - rightMin
+
+    # Convert the left range into a 0-1 range (float)
+    valueScaled = float(value - leftMin) / float(leftSpan)
+
+    # Convert the 0-1 range into a value in the right range.
+    return rightMin + (valueScaled * rightSpan)

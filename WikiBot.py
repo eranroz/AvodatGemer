@@ -29,12 +29,12 @@ def getPagesInCategory(category, amount):
 		arr.append(page.text)
 	return arr
 
-'''
-ps1 = getPagesInCategory(u"קטגוריה:סרטים", 100)
-ps2 = getPagesInCategory(u"קטגוריה:סדרות טלוויזיה", 100)
-ps3 = getPagesInCategory(u"קטגוריה:אישים", 100)
-ps4 = getPagesInCategory(u"קטגוריה:מדינות העולם", 100)
 
+ps1 = getPagesInCategory(u"קטגוריה:סרטים", 50)
+ps2 = getPagesInCategory(u"קטגוריה:סדרות טלוויזיה", 50)
+ps3 = getPagesInCategory(u"קטגוריה:אישים", 50)
+ps4 = getPagesInCategory(u"קטגוריה:מדינות העולם", 50)
+'''
 cwe.resetTable()
 
 cwe.insertWords(cwe.findSimilarity(ps1, 0.75), "Movies")
@@ -44,11 +44,15 @@ cwe.insertWords(cwe.findSimilarity(ps4, 0.75), "Countries")
 
 cwe.fixValues()
 '''
-tfidf.checkDB()
+tfidf.resetTable()
+tfidf.getValues("Movies", ps1)
+tfidf.getValues("TV Series", ps2)
+tfidf.getValues("People", ps3)
+tfidf.getValues("Countries", ps4)
 
 
 p = pywikibot.Page(site, u"בנימין נתניהו").text
 
-print("The category is: " + cwe.getMax(p, {"Movies" : cwe.getWords("Movies"), "TV Series" : cwe.getWords("TV Series"), "People": cwe.getWords("People"), "Countries" : cwe.getWords("Countries")}))
+#print("The category is: " + cwe.getMax(p, {"Movies" : cwe.getWords("Movies"), "TV Series" : cwe.getWords("TV Series"), "People": cwe.getWords("People"), "Countries" : cwe.getWords("Countries")}))
 
 #print(findSimilarity(pt, 0.75))
