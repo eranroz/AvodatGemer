@@ -82,6 +82,7 @@ def resetTable():
     conn.execute(sql)
     conn.commit()
     checkDB()
+
 def translate(value, leftMin, leftMax, rightMin, rightMax):
     # Figure out how 'wide' each range is
     leftSpan = leftMax - leftMin
@@ -92,3 +93,19 @@ def translate(value, leftMin, leftMax, rightMin, rightMax):
 
     # Convert the 0-1 range into a value in the right range.
     return rightMin + (valueScaled * rightSpan)
+
+def evaluate(page, cat):
+    page = filterString(page)
+    words = page.split()
+    value = 0.0
+    for word in cat:
+        if word in words:
+            value += cat[word]
+    return value
+
+def getMax(page, cats):
+    values = {}
+    for cat in cats:
+        values[cat] = evaluate(page, cats[cat]) / len(cats[cat])
+    print values
+    return max(values, key=values.get)
