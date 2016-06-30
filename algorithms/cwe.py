@@ -109,6 +109,7 @@ class cwe:
         for cat in cats:
             values[cat] = self.evaluate(page, cats[cat]) / len(cats[cat])
         #print values
+        print values
         return max(values, key=values.get)
 
 

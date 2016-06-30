@@ -42,10 +42,18 @@ tfidf.getValues("People", ps3)
 tfidf.getValues("Countries", ps4)
 '''
 
+<<<<<<< HEAD
 p = pywikibot.Page(site, u"נפתלי בנט").text
 
 #print("The category is: " + tfidf.getMax(p, {"Movies" : cwe.getWords("Movies"), "TV Series" : cwe.getWords("TV Series"), "People": cwe.getWords("People"), "Countries" : cwe.getWords("Countries")}))
 
 print("The category is: " + cwe.getMax(p, {"Movies" : cwe.getWords("Movies"), "TV Series" : cwe.getWords("TV Series"), "People": cwe.getWords("People"), "Countries" : cwe.getWords("Countries")}))
+=======
+p = pywikibot.Page(site, u"שובר שורות").text
+
+print("The category is: " + tfidf.getMax(p, {"Movies" : cwe.getWords("Movies"), "TV Series" : cwe.getWords("TV Series"), "People": cwe.getWords("People"), "Countries" : cwe.getWords("Countries")}))
+
+#print("The category is: " + cwe.getMax(p, {"Movies" : cwe.getWords("Movies"), "TV Series" : cwe.getWords("TV Series"), "People": cwe.getWords("People"), "Countries" : cwe.getWords("Countries")}))
+>>>>>>> 3a6a19c9cdc71404b2495c4ddb25b44118e25011
 
 #print(findSimilarity(pt, 0.75))

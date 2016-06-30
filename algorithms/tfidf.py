@@ -108,4 +108,5 @@ def getMax(page, cats):
     for cat in cats:
         values[cat] = evaluate(page, cats[cat]) / len(cats[cat])
     #print values
+    print values
     return max(values, key=values.get)
