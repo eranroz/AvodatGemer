@@ -1,0 +1,39 @@
+{
+  "trees" : [
+    {
+      "category" : "Movies",
+      "parameters" : [
+        {
+          "type" : "fl",
+          "term" : "סרט"
+        },
+        {
+          "type" : "fl",
+          "term" : "{n}"
+        },
+        {
+          "type" : "all",
+          "term" : "שחקן,שחקנים,שחקנית,שחקניות"
+        }
+      ]
+    },
+    {
+      "category" : "TV Series",
+      "parameters" : [
+
+      ]
+    },
+    {
+      "category" : "People",
+      "parameters" : [
+
+      ]
+    },
+    {
+      "category" : "Countries",
+      "parameters" : [
+
+      ]
+    }
+  ]
+}
