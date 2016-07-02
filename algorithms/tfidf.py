@@ -58,12 +58,12 @@ def getValues(category, documents):
                 if(values[word] < minimum):
                     minimum = values[word]
                 words.append(word)
-    print "maximum: " + str(maximum) + ", minimum: " + str(minimum)
+    print("maximum: " + str(maximum) + ", minimum: " + str(minimum))
     for value in values:
         values[value] = (values[value]-minimum)/(maximum-minimum)
         if(values[value]>=0.25):
             sql="INSERT INTO tfidfWords (Category, Word, Value) VALUES ('" + category + "','" + value + "'," + str(values[value]) + ")"
-            print "Executing: " + sql
+            print("Executing: " + sql)
             cursor.execute(sql)
     conn.commit()
 
@@ -108,5 +108,5 @@ def getMax(page, cats):
     for cat in cats:
         values[cat] = evaluate(page, cats[cat]) / len(cats[cat])
     #print values
-    print values
+    print(values)
     return max(values, key=values.get)

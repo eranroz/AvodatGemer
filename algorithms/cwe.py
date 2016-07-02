@@ -9,10 +9,11 @@ import re
 import string
 import math
 
+
 class cwe:
     conn = sqlite3.connect('cats.db')
     cursor = conn.cursor()
-    whitelist = string.letters + u"ךםןףץאבגדהוזחטיכלמנסעפצקרשת "
+    whitelist = string.ascii_letters + u"ךםןףץאבגדהוזחטיכלמנסעפצקרשת "
 
     # Create Words table
 
@@ -55,41 +56,42 @@ class cwe:
     def insertWords(self, words, category):
         for word in words:
             sql = "INSERT INTO Words (Category, Word, Value) VALUES ('" \
-                + category + "', '" + word + "', " + str(words[word]) \
-                + ')'
-            print 'Executing: ' + sql
+                  + category + "', '" + word + "', " + str(words[word]) \
+                  + ')'
+            print('Executing: ' + sql)
             self.cursor.execute(sql)
         self.conn.commit()
 
     def getWords(self, category):
         self.cursor.execute("SELECT Word, Value FROM Words WHERE Category='"
-                             + category + "'")
+                            + category + "'")
         tmp = {}
         for row in self.cursor:
             tmp[row[0]] = row[1]
         return tmp
 
     def fixValues(self):
-	    self.cursor.execute('SELECT Word FROM Words')
-	    words = {}
-	    for word in self.cursor:
-		    if not word in words:
-		    	words[word] = 1
-            else:
-	    		words[word] = words[word] + 1
-	    for word in words:
-	    	self.cursor.execute("SELECT ID, Value FROM Words WHERE Word='"
-	                         + word[0] + "'")
-	    	rows = self.cursor.fetchall()
-	    	for row in rows:
-	    		newVal = row[1] * math.pow(25, 1.5 - words[word])
-	    		if(newVal < 0.2): #שרירותי
-					sql = 'DELETE FROM Words WHERE ID=' + str(row[0])
-	    		else:
-	    			sql = 'UPDATE Words SET Value=' + str(self.translate(newVal, 0, 5, 0, 1)) + ' WHERE ID=' + str(row[0])
-	    		print sql
-	    		self.cursor.execute(sql)
-	    self.conn.commit()
+        self.cursor.execute('SELECT Word FROM Words')
+        words = {}
+        for word in self.cursor:
+            if not word in words:
+                words[word] = 1
+        else:
+            words[word] = words[word] + 1
+        for word in words:
+            self.cursor.execute("SELECT ID, Value FROM Words WHERE Word='"
+                                + word[0] + "'")
+            rows = self.cursor.fetchall()
+            for row in rows:
+                newVal = row[1] * math.pow(25, 1.5 - words[word])
+                if (newVal < 0.2):  # שרירותי
+                    sql = 'DELETE FROM Words WHERE ID=' + str(row[0])
+                else:
+                    sql = 'UPDATE Words SET Value=' + str(self.translate(newVal, 0, 5, 0, 1)) + ' WHERE ID=' + str(
+                        row[0])
+                print(sql)
+                self.cursor.execute(sql)
+        self.conn.commit()
 
     # return value of page in category - evaluate(string,dict)
 
@@ -108,11 +110,9 @@ class cwe:
         values = {}
         for cat in cats:
             values[cat] = self.evaluate(page, cats[cat]) / len(cats[cat])
-        #print values
-        print values
+        # print values
+        print(values)
         return max(values, key=values.get)
-
-
 
     def resetTable(self):
         sql = "DROP TABLE IF EXISTS Words"

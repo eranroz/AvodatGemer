@@ -1,3 +1,6 @@
 #large files & archives
 *.bz2
 *.xml
+throttle.ctrl
+apicache/
+user-config.py
